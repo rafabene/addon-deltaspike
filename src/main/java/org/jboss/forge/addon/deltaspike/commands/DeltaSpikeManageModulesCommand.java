@@ -1,11 +1,15 @@
 package org.jboss.forge.addon.deltaspike.commands;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.inject.Inject;
 
 import org.jboss.forge.addon.deltaspike.DeltaSpikeModule;
+import org.jboss.forge.addon.deltaspike.DeltaSpikeModules;
 import org.jboss.forge.addon.deltaspike.facets.DeltaSpikeFacet;
 import org.jboss.forge.addon.facets.constraints.FacetConstraint;
 import org.jboss.forge.addon.projects.Project;
@@ -23,7 +27,7 @@ import org.jboss.forge.addon.ui.util.Categories;
 import org.jboss.forge.addon.ui.util.Metadata;
 
 @FacetConstraint({ DeltaSpikeFacet.class })
-public class DeltaSpikeAddModulesCommand extends AbstractProjectCommand {
+public class DeltaSpikeManageModulesCommand extends AbstractProjectCommand {
 
     @Inject
     private ProjectFactory projectFactory;
@@ -34,8 +38,8 @@ public class DeltaSpikeAddModulesCommand extends AbstractProjectCommand {
 
     @Override
     public UICommandMetadata getMetadata(UIContext context) {
-        return Metadata.forCommand(DeltaSpikeAddModulesCommand.class)
-            .name("DeltaSpike: Setup Modules")
+        return Metadata.forCommand(DeltaSpikeManageModulesCommand.class)
+            .name("DeltaSpike: Manage Modules")
             .category(Categories.create("DeltaSpike"));
     }
 
@@ -44,13 +48,10 @@ public class DeltaSpikeAddModulesCommand extends AbstractProjectCommand {
         Project project = getSelectedProject(builder);
         DeltaSpikeFacet deltaSpikeFacet = project.getFacet(DeltaSpikeFacet.class);
 
-        Set<DeltaSpikeModule> allModules =  EnumSet.allOf(DeltaSpikeModule.class);
-        allModules.removeAll(deltaSpikeFacet.getInstalledModules());
-        
-        dsModules.setValueChoices(allModules);
-        
-        builder
-            .add(dsModules);
+        dsModules.setValueChoices(Arrays.<DeltaSpikeModule> asList(DeltaSpikeModules.values()));
+        dsModules.setValue(deltaSpikeFacet.getInstalledModules());
+
+        builder.add(dsModules);
     }
 
     @Override
@@ -58,13 +59,30 @@ public class DeltaSpikeAddModulesCommand extends AbstractProjectCommand {
         Project project = getSelectedProject(context);
         DeltaSpikeFacet deltaSpikeFacet = project.getFacet(DeltaSpikeFacet.class);
 
-        // Modules Install
+
         Iterable<DeltaSpikeModule> selectedModules = dsModules.getValue();
-        for (DeltaSpikeModule dsModule : selectedModules) {
-            deltaSpikeFacet.install(dsModule);
+        Set<DeltaSpikeModule> modulesInstalled = new HashSet<DeltaSpikeModule>();
+        Set<DeltaSpikeModule> modulesRemoved = new HashSet<DeltaSpikeModule>();
+        for (DeltaSpikeModule dsModule : DeltaSpikeModules.values()) {
+            boolean selected = false;
+            for (DeltaSpikeModule selectedModule : selectedModules) {
+                if (selectedModule.getName().equals(dsModule.getName())) {
+                    selected = true;
+                }
+            }
+            // Modules to Install
+            if (selected && !deltaSpikeFacet.isModuleInstalled(dsModule)) {
+                modulesInstalled.add(dsModule);
+                deltaSpikeFacet.install(dsModule);
+            }
+            // Modules to Remove
+            if (!selected && deltaSpikeFacet.isModuleInstalled(dsModule)) {
+                modulesRemoved.add(dsModule);
+                deltaSpikeFacet.remove(dsModule);
+            }
         }
 
-        return Results.success("DeltaSpike selected modules installed!");
+        return Results.success("DeltaSpike modules installed:" + modulesInstalled + "\nDeltaSpike modules removed:" + modulesRemoved);
     }
 
     /*
@@ -86,4 +104,5 @@ public class DeltaSpikeAddModulesCommand extends AbstractProjectCommand {
     protected boolean isProjectRequired() {
         return true;
     }
+
 }

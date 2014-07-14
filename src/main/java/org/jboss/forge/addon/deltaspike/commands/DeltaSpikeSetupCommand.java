@@ -1,26 +1,24 @@
 package org.jboss.forge.addon.deltaspike.commands;
 
+import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import org.apache.maven.model.Model;
 import org.jboss.forge.addon.deltaspike.CoordinateVersionConverter;
 import org.jboss.forge.addon.deltaspike.DeltaSpikeModule;
+import org.jboss.forge.addon.deltaspike.DeltaSpikeModules;
 import org.jboss.forge.addon.deltaspike.facets.DeltaSpikeFacet;
 import org.jboss.forge.addon.dependencies.Coordinate;
-import org.jboss.forge.addon.dependencies.Dependency;
 import org.jboss.forge.addon.dependencies.DependencyQuery;
 import org.jboss.forge.addon.dependencies.DependencyRepository;
 import org.jboss.forge.addon.dependencies.DependencyResolver;
-import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;
 import org.jboss.forge.addon.dependencies.builder.DependencyQueryBuilder;
 import org.jboss.forge.addon.dependencies.util.NonSnapshotDependencyFilter;
 import org.jboss.forge.addon.facets.FacetFactory;
-import org.jboss.forge.addon.maven.projects.MavenFacet;
+import org.jboss.forge.addon.facets.FacetNotFoundException;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.ProjectFactory;
-import org.jboss.forge.addon.projects.dependencies.DependencyInstaller;
 import org.jboss.forge.addon.projects.ui.AbstractProjectCommand;
 import org.jboss.forge.addon.ui.context.UIBuilder;
 import org.jboss.forge.addon.ui.context.UIContext;
@@ -58,7 +56,7 @@ public class DeltaSpikeSetupCommand extends AbstractProjectCommand {
     @Override
     public UICommandMetadata getMetadata(UIContext context) {
         return Metadata.forCommand(DeltaSpikeSetupCommand.class)
-            .name("DeltaSpike: setup")
+            .name("DeltaSpike: Setup")
             .category(Categories.create("DeltaSpike"));
     }
 
@@ -74,6 +72,8 @@ public class DeltaSpikeSetupCommand extends AbstractProjectCommand {
         dsVersions.setValueChoices(versions);
         dsVersions.setItemLabelConverter(CoordinateVersionConverter.INSTANCE);
         dsVersions.setDefaultValue(versions.get(versions.size() - 1));
+
+        dsModules.setValueChoices(Arrays.<DeltaSpikeModule> asList(DeltaSpikeModules.values()));
 
         builder
             .add(dsVersions)
@@ -114,5 +114,22 @@ public class DeltaSpikeSetupCommand extends AbstractProjectCommand {
     @Override
     protected boolean isProjectRequired() {
         return true;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.jboss.forge.addon.projects.ui.AbstractProjectCommand#isEnabled(org.jboss.forge.addon.ui.context.UIContext)
+     */
+    @Override
+    public boolean isEnabled(UIContext context) {
+        try {
+            Project project = getSelectedProject(context);
+            DeltaSpikeFacet deltaSpikeFacet = project.getFacet(DeltaSpikeFacet.class);
+            // It's only enabled if DeltaSpike is not installed
+            return !deltaSpikeFacet.isInstalled();
+        } catch (FacetNotFoundException e) {
+            return true;
+        }
     }
 }

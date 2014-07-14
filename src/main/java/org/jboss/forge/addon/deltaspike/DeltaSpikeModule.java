@@ -16,63 +16,16 @@
  */
 package org.jboss.forge.addon.deltaspike;
 
-import static org.jboss.forge.addon.dependencies.builder.DependencyBuilder.create;
-
 import org.jboss.forge.addon.dependencies.Dependency;
 
 /**
  * @author rafaelbenevides
  *
  */
-public enum DeltaSpikeModule {
+public interface DeltaSpikeModule {
 
-    SECURITY("Security",
-        create("org.apache.deltaspike.modules:deltaspike-security-module-api:${deltaspike.version}:compile"),
-        create("org.apache.deltaspike.modules:deltaspike-security-module-impl:${deltaspike.version}:runtime")),
-    JPA("JPA",
-        create("org.apache.deltaspike.modules:deltaspike-jpa-module-api:${deltaspike.version}:compile"),
-        create("org.apache.deltaspike.modules:deltaspike-jpa-module-impl:${deltaspike.version}:runtime")),
-    JSF("JSF",
-        create("org.apache.deltaspike.modules:deltaspike-jsf-module-api:${deltaspike.version}:compile"),
-        create("org.apache.deltaspike.modules:deltaspike-jsf-module-impl:${deltaspike.version}:runtime")),
-    BEANVALIDATION("Bean Validation",
-        create("org.apache.deltaspike.modules:deltaspike-beanval-module-api:${deltaspike.version}:compile"),
-        create("org.apache.deltaspike.modules:deltaspike-beanval-module-impl:${deltaspike.version}:runtime")),
-    SERVLET("Servlet",
-        create("org.apache.deltaspike.modules:deltaspike-servlet-module-api:${deltaspike.version}:compile"),
-        create("org.apache.deltaspike.modules:deltaspike-servlet-module-impl:${deltaspike.version}:runtime")),
-    DATA("Data",
-        create("org.apache.deltaspike.modules:deltaspike-data-module-api:${deltaspike.version}:compile"),
-        create("org.apache.deltaspike.modules:deltaspike-data-module-impl:${deltaspike.version}:runtime")),
-    TEST_CONTROL("Test-Control",
-        create("org.apache.deltaspike.modules:deltaspike-test-control-module-api:${deltaspike.version}:compile"),
-        create("org.apache.deltaspike.modules:deltaspike-test-control-module-impl:${deltaspike.version}:runtime")),
-    SCHEDULER("Scheduler",
-        create("org.apache.deltaspike.modules:deltaspike-scheduler-module-api:${deltaspike.version}:compile"),
-        create("org.apache.deltaspike.modules:deltaspike-scheduler-module-impl:${deltaspike.version}:runtime"));
+    public abstract String getName();
 
-    private DeltaSpikeModule(String name, Dependency... dependencies) {
-        this.name = name;
-        this.dependencies = dependencies;
-    }
-
-    private String name;
-    private Dependency[] dependencies;
-
-    public String getName() {
-        return name;
-    }
-
-    public Dependency[] getDependencies() {
-        return dependencies;
-    }
-    
-    /* (non-Javadoc)
-     * @see java.lang.Enum#toString()
-     */
-    @Override
-    public String toString() {
-        return getName();
-    }
+    public abstract Dependency[] getDependencies();
 
 }

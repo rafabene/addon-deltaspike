@@ -35,6 +35,8 @@ public interface DeltaSpikeFacet extends ProjectFacet {
     
     public DeltaSpikeFacet install(DeltaSpikeModule deltaSpikeModule);
     
+    public DeltaSpikeFacet remove(DeltaSpikeModule deltaSpikeModule);
+    
     public boolean isModuleInstalled(DeltaSpikeModule deltaSpikeModule);
 
 }

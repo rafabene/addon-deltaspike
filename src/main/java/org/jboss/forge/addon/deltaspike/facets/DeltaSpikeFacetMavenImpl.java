@@ -23,6 +23,7 @@ import javax.inject.Inject;
 
 import org.apache.maven.model.Model;
 import org.jboss.forge.addon.deltaspike.DeltaSpikeModule;
+import org.jboss.forge.addon.deltaspike.DeltaSpikeModules;
 import org.jboss.forge.addon.dependencies.Dependency;
 import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;
 import org.jboss.forge.addon.facets.AbstractFacet;
@@ -30,6 +31,7 @@ import org.jboss.forge.addon.facets.constraints.FacetConstraint;
 import org.jboss.forge.addon.maven.projects.MavenFacet;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.dependencies.DependencyInstaller;
+import org.jboss.forge.addon.projects.facets.DependencyFacet;
 
 /**
  * @author rafaelbenevides
@@ -120,7 +122,7 @@ public class DeltaSpikeFacetMavenImpl extends AbstractFacet<Project> implements 
     @Override
     public Set<DeltaSpikeModule> getInstalledModules() {
         Set<DeltaSpikeModule> installedModules = new HashSet<DeltaSpikeModule>();
-        for (DeltaSpikeModule module : DeltaSpikeModule.values()) {
+        for (DeltaSpikeModules module : DeltaSpikeModules.values()) {
             if (isModuleInstalled(module)) {
                 installedModules.add(module);
             }
@@ -143,5 +145,20 @@ public class DeltaSpikeFacetMavenImpl extends AbstractFacet<Project> implements 
     @Override
     public boolean isModuleInstalled(DeltaSpikeModule deltaSpikeModule) {
         return dependencyInstaller.isInstalled(getFaceted(), deltaSpikeModule.getDependencies()[0]);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.jboss.forge.addon.deltaspike.facets.DeltaSpikeFacet#remove(org.jboss.forge.addon.deltaspike.DeltaSpikeModule)
+     */
+    @Override
+    public DeltaSpikeFacet remove(DeltaSpikeModule deltaSpikeModule) {
+        DependencyFacet dependencyFacet = getFaceted().getFacet(DependencyFacet.class);
+        for (Dependency dependency : deltaSpikeModule.getDependencies()) {
+            dependencyFacet.removeManagedDependency(dependency);
+            dependencyFacet.removeDependency(dependency);
+        }
+        return this;
     }
 }
