@@ -27,6 +27,7 @@ import org.jboss.forge.addon.deltaspike.DeltaSpikeModules;
 import org.jboss.forge.addon.dependencies.Dependency;
 import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;
 import org.jboss.forge.addon.facets.AbstractFacet;
+import org.jboss.forge.addon.facets.FacetNotFoundException;
 import org.jboss.forge.addon.facets.constraints.FacetConstraint;
 import org.jboss.forge.addon.maven.projects.MavenFacet;
 import org.jboss.forge.addon.projects.Project;
@@ -73,7 +74,11 @@ public class DeltaSpikeFacetMavenImpl extends AbstractFacet<Project> implements 
      */
     @Override
     public boolean isInstalled() {
-        return getFaceted().getFacet(MavenFacet.class).getProperties().containsKey(DELTASPIKE_PROPERTY);
+        try {
+            return getFaceted().getFacet(MavenFacet.class).getProperties().containsKey(DELTASPIKE_PROPERTY);
+        } catch (FacetNotFoundException e) {
+            return false;
+        }
     }
 
     /*

@@ -44,11 +44,11 @@ public class DeltaSpikeSetupCommand extends AbstractProjectCommand {
     private DependencyResolver dependencyResolver;
 
     @Inject
-    @WithAttributes(label = "DeltaSpike version", required = true)
+    @WithAttributes(label = "DeltaSpike version", required = true, name = "version")
     private UISelectOne<Coordinate> dsVersions;
 
     @Inject
-    @WithAttributes(label = "DeltaSpike modules")
+    @WithAttributes(label = "DeltaSpike modules", name = "modules")
     private UISelectMany<DeltaSpikeModule> dsModules;
 
     private DependencyRepository mavenCentral = new DependencyRepository("maven-cetral", "http://central.maven.org/maven2");
@@ -57,6 +57,7 @@ public class DeltaSpikeSetupCommand extends AbstractProjectCommand {
     public UICommandMetadata getMetadata(UIContext context) {
         return Metadata.forCommand(DeltaSpikeSetupCommand.class)
             .name("DeltaSpike: Setup")
+            .description("Install DeltaSpike Core and its modules")
             .category(Categories.create("DeltaSpike"));
     }
 
@@ -123,13 +124,16 @@ public class DeltaSpikeSetupCommand extends AbstractProjectCommand {
      */
     @Override
     public boolean isEnabled(UIContext context) {
-        try {
-            Project project = getSelectedProject(context);
-            DeltaSpikeFacet deltaSpikeFacet = project.getFacet(DeltaSpikeFacet.class);
-            // It's only enabled if DeltaSpike is not installed
-            return !deltaSpikeFacet.isInstalled();
-        } catch (FacetNotFoundException e) {
-            return true;
+        if (super.isEnabled(context)) {
+            try {
+                Project project = getSelectedProject(context);
+                // It's only enabled if DeltaSpike is not installed
+                return !project.hasFacet(DeltaSpikeFacet.class);
+            } catch (FacetNotFoundException e) {
+                return true;
+            }
+        } else {
+            return false;
         }
     }
 }
