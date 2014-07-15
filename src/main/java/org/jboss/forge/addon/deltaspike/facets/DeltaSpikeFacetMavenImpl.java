@@ -61,8 +61,7 @@ public class DeltaSpikeFacetMavenImpl extends AbstractFacet<Project> implements 
         Dependency coreImpl = DependencyBuilder
             .create("org.apache.deltaspike.core:deltaspike-core-impl:${deltaspike.version}:runtime");
 
-        installDependency(getFaceted(), coreApi);
-        installDependency(getFaceted(), coreImpl);
+        installDependency(getFaceted(), coreApi, coreImpl);
 
         return isInstalled();
     }
@@ -135,9 +134,11 @@ public class DeltaSpikeFacetMavenImpl extends AbstractFacet<Project> implements 
         return installedModules;
     }
 
-    private void installDependency(Project project, Dependency dependency) {
-        dependencyInstaller.installManaged(project, dependency);
-        dependencyInstaller.install(project, dependency);
+    private void installDependency(Project project, Dependency... dependencies) {
+        for (Dependency dependency : dependencies) {
+            dependencyInstaller.installManaged(project, dependency);
+            dependencyInstaller.install(project, dependency);
+        }
     }
 
     /*
