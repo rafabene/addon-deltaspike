@@ -14,20 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jboss.forge.addon.deltaspike;
+package org.jboss.forge.addon.deltaspike.extras;
 
-import org.jboss.forge.addon.deltaspike.extras.ModuleInstallationExtra;
-import org.jboss.forge.addon.dependencies.Dependency;
+import org.jboss.forge.addon.projects.Project;
+
 
 /**
+ * This Interface represent extra steps that is needed to install a DeltaSpike module
+ * 
  * @author rafaelbenevides
  *
  */
-public interface DeltaSpikeModule {
+public interface ModuleInstallationExtra {
+    
+    public void install(Project project);
 
-    public  String getName();
-
-    public  Dependency[] getDependencies();
-
-    public ModuleInstallationExtra getInstallationExtraStep();
+    public void remove(Project project);
 }

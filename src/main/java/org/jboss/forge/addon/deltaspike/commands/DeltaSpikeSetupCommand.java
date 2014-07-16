@@ -17,6 +17,7 @@ import org.jboss.forge.addon.dependencies.builder.DependencyQueryBuilder;
 import org.jboss.forge.addon.dependencies.util.NonSnapshotDependencyFilter;
 import org.jboss.forge.addon.facets.FacetFactory;
 import org.jboss.forge.addon.facets.FacetNotFoundException;
+import org.jboss.forge.addon.javaee.cdi.CDIFacet_1_0;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.ProjectFactory;
 import org.jboss.forge.addon.projects.ui.AbstractProjectCommand;
@@ -85,6 +86,7 @@ public class DeltaSpikeSetupCommand extends AbstractProjectCommand {
     public Result execute(UIExecutionContext context) throws Exception {
         Coordinate dsVersionToInstall = dsVersions.getValue();
         Project project = getSelectedProject(context);
+        facetFactory.install(project, CDIFacet_1_0.class);
         DeltaSpikeFacet deltaSpikeFacet = facetFactory.install(project, DeltaSpikeFacet.class);
         deltaSpikeFacet.setDeltaSpikeVersion(dsVersionToInstall.getVersion());
 

@@ -8,6 +8,7 @@ import org.jboss.forge.addon.deltaspike.DeltaSpikeModule;
 import org.jboss.forge.addon.deltaspike.DeltaSpikeModules;
 import org.jboss.forge.addon.deltaspike.facets.DeltaSpikeFacet;
 import org.jboss.forge.addon.facets.constraints.FacetConstraint;
+import org.jboss.forge.addon.javaee.cdi.CDIFacet_1_0;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.ui.context.UIContext;
 import org.jboss.forge.addon.ui.context.UIExecutionContext;
@@ -15,7 +16,7 @@ import org.jboss.forge.addon.ui.input.UISelectMany;
 import org.jboss.forge.addon.ui.result.Result;
 import org.jboss.forge.addon.ui.result.Results;
 
-@FacetConstraint({ DeltaSpikeFacet.class })
+@FacetConstraint({ DeltaSpikeFacet.class, CDIFacet_1_0.class })
 public class DeltaSpikeManageModulesCommand extends AbstractDeltaSpikeCommand {
 
     @Override
@@ -37,11 +38,17 @@ public class DeltaSpikeManageModulesCommand extends AbstractDeltaSpikeCommand {
             if (selected && !deltaSpikeFacet.isModuleInstalled(dsModule)) {
                 modulesInstalled.add(dsModule);
                 deltaSpikeFacet.install(dsModule);
+                if (dsModule.getInstallationExtraStep() != null){
+                    dsModule.getInstallationExtraStep().install(project);
+                }
             }
             // Modules to Remove
             if (!selected && deltaSpikeFacet.isModuleInstalled(dsModule)) {
                 modulesRemoved.add(dsModule);
                 deltaSpikeFacet.remove(dsModule);
+                if (dsModule.getInstallationExtraStep() != null){
+                    dsModule.getInstallationExtraStep().remove(project);
+                }
             }
         }
 
@@ -87,6 +94,7 @@ public class DeltaSpikeManageModulesCommand extends AbstractDeltaSpikeCommand {
      */
     @Override
     public void prepareModulesList(DeltaSpikeFacet deltaSpikeFacet, UISelectMany<DeltaSpikeModule> dsModules) {
+        dsModules.setRequired(false);
         dsModules.setValueChoices(Arrays.<DeltaSpikeModule> asList(DeltaSpikeModules.values()));
         dsModules.setValue(deltaSpikeFacet.getInstalledModules());
     }

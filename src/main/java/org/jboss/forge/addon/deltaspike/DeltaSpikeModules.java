@@ -18,6 +18,9 @@ package org.jboss.forge.addon.deltaspike;
 
 import static org.jboss.forge.addon.dependencies.builder.DependencyBuilder.create;
 
+import org.jboss.forge.addon.deltaspike.extras.JPAExtraSteps;
+import org.jboss.forge.addon.deltaspike.extras.ModuleInstallationExtra;
+import org.jboss.forge.addon.deltaspike.extras.SecurityExtraSteps;
 import org.jboss.forge.addon.dependencies.Dependency;
 
 /**
@@ -26,10 +29,10 @@ import org.jboss.forge.addon.dependencies.Dependency;
  */
 public enum DeltaSpikeModules implements DeltaSpikeModule {
 
-    SECURITY("Security",
+    SECURITY("Security", new SecurityExtraSteps(),
         create("org.apache.deltaspike.modules:deltaspike-security-module-api:${deltaspike.version}:compile"),
         create("org.apache.deltaspike.modules:deltaspike-security-module-impl:${deltaspike.version}:runtime")),
-    JPA("JPA",
+    JPA("JPA", new JPAExtraSteps(),
         create("org.apache.deltaspike.modules:deltaspike-jpa-module-api:${deltaspike.version}:compile"),
         create("org.apache.deltaspike.modules:deltaspike-jpa-module-impl:${deltaspike.version}:runtime")),
     JSF("JSF",
@@ -49,15 +52,22 @@ public enum DeltaSpikeModules implements DeltaSpikeModule {
         create("org.apache.deltaspike.modules:deltaspike-test-control-module-impl:${deltaspike.version}:runtime")),
     SCHEDULER("Scheduler",
         create("org.apache.deltaspike.modules:deltaspike-scheduler-module-api:${deltaspike.version}:compile"),
-        create("org.apache.deltaspike.modules:deltaspike-scheduler-module-impl:${deltaspike.version}:runtime"));
+        create("org.apache.deltaspike.modules:deltaspike-scheduler-module-impl:${deltaspike.version}:runtime"),
+        create("org.quartz-scheduler:quartz:2.2.1:compile"));
 
-    private DeltaSpikeModules(String name, Dependency... dependencies) {
+    private DeltaSpikeModules(String name, ModuleInstallationExtra extra, Dependency... dependencies) {
         this.name = name;
         this.dependencies = dependencies;
+        this.extraInstallationStep = extra;
+    }
+
+    private DeltaSpikeModules(String name, Dependency... dependencies) {
+        this(name, null, dependencies);
     }
 
     private String name;
     private Dependency[] dependencies;
+    private ModuleInstallationExtra extraInstallationStep;
 
     /*
      * (non-Javadoc)
@@ -87,6 +97,11 @@ public enum DeltaSpikeModules implements DeltaSpikeModule {
     @Override
     public String toString() {
         return getName();
+    }
+
+    @Override
+    public ModuleInstallationExtra getInstallationExtraStep() {
+        return extraInstallationStep;
     }
 
 }
