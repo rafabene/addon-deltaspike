@@ -64,6 +64,18 @@
             <artifactId>javaee</artifactId>
             <classifier>forge-addon</classifier>
         </dependency>
+        <dependency>
+            <groupId>org.jboss.forge.furnace.container</groupId>
+            <artifactId>cdi</artifactId>
+            <classifier>forge-addon</classifier>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.forge.addon</groupId>
+            <artifactId>ui-test-harness</artifactId>
+            <classifier>forge-addon</classifier>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
     <build>
         <finalName>addon-deltaspike</finalName>

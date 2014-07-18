@@ -17,10 +17,12 @@ import org.jboss.forge.addon.dependencies.builder.DependencyQueryBuilder;
 import org.jboss.forge.addon.dependencies.util.NonSnapshotDependencyFilter;
 import org.jboss.forge.addon.facets.FacetFactory;
 import org.jboss.forge.addon.facets.FacetNotFoundException;
-import org.jboss.forge.addon.javaee.cdi.CDIFacet_1_0;
+import org.jboss.forge.addon.javaee.cdi.CDIFacet;
+import org.jboss.forge.addon.javaee.cdi.ui.CDISetupCommand;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.ProjectFactory;
 import org.jboss.forge.addon.projects.ui.AbstractProjectCommand;
+import org.jboss.forge.addon.ui.command.PrerequisiteCommandsProvider;
 import org.jboss.forge.addon.ui.context.UIBuilder;
 import org.jboss.forge.addon.ui.context.UIContext;
 import org.jboss.forge.addon.ui.context.UIExecutionContext;
@@ -28,12 +30,14 @@ import org.jboss.forge.addon.ui.input.UISelectMany;
 import org.jboss.forge.addon.ui.input.UISelectOne;
 import org.jboss.forge.addon.ui.metadata.UICommandMetadata;
 import org.jboss.forge.addon.ui.metadata.WithAttributes;
+import org.jboss.forge.addon.ui.result.NavigationResult;
 import org.jboss.forge.addon.ui.result.Result;
 import org.jboss.forge.addon.ui.result.Results;
+import org.jboss.forge.addon.ui.result.navigation.NavigationResultBuilder;
 import org.jboss.forge.addon.ui.util.Categories;
 import org.jboss.forge.addon.ui.util.Metadata;
 
-public class DeltaSpikeSetupCommand extends AbstractProjectCommand {
+public class DeltaSpikeSetupCommand extends AbstractProjectCommand implements PrerequisiteCommandsProvider {
 
     @Inject
     private ProjectFactory projectFactory;
@@ -86,7 +90,7 @@ public class DeltaSpikeSetupCommand extends AbstractProjectCommand {
     public Result execute(UIExecutionContext context) throws Exception {
         Coordinate dsVersionToInstall = dsVersions.getValue();
         Project project = getSelectedProject(context);
-        facetFactory.install(project, CDIFacet_1_0.class);
+
         DeltaSpikeFacet deltaSpikeFacet = facetFactory.install(project, DeltaSpikeFacet.class);
         deltaSpikeFacet.setDeltaSpikeVersion(dsVersionToInstall.getVersion());
 
@@ -137,5 +141,17 @@ public class DeltaSpikeSetupCommand extends AbstractProjectCommand {
         } else {
             return false;
         }
+    }
+
+    @Override
+    public NavigationResult getPrerequisiteCommands(UIContext context) {
+        NavigationResultBuilder navigationResultBuilder = NavigationResultBuilder.create();
+        Project project = getSelectedProject(context);
+        if (project != null) {
+            if (!project.hasFacet(CDIFacet.class)) {
+                navigationResultBuilder.add(CDISetupCommand.class);
+            }
+        }
+        return navigationResultBuilder.build();
     }
 }

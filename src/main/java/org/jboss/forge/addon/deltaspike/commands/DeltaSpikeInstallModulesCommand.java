@@ -26,7 +26,7 @@ import org.jboss.forge.addon.deltaspike.DeltaSpikeModule;
 import org.jboss.forge.addon.deltaspike.DeltaSpikeModules;
 import org.jboss.forge.addon.deltaspike.facets.DeltaSpikeFacet;
 import org.jboss.forge.addon.facets.constraints.FacetConstraint;
-import org.jboss.forge.addon.javaee.cdi.CDIFacet_1_0;
+import org.jboss.forge.addon.javaee.cdi.CDIFacet;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.ui.context.UIContext;
 import org.jboss.forge.addon.ui.context.UIExecutionContext;
@@ -38,7 +38,7 @@ import org.jboss.forge.addon.ui.result.Results;
  * @author rafaelbenevides
  *
  */
-@FacetConstraint({ DeltaSpikeFacet.class, CDIFacet_1_0.class })
+@FacetConstraint({ DeltaSpikeFacet.class, CDIFacet.class })
 public class DeltaSpikeInstallModulesCommand extends AbstractDeltaSpikeCommand {
 
     /*
