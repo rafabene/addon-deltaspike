@@ -27,16 +27,16 @@ import org.jboss.forge.addon.projects.ProjectFacet;
  */
 public interface DeltaSpikeFacet extends ProjectFacet {
     
-    public String getDeltaSpikeVersion();
+    String getDeltaSpikeVersion();
     
-    public DeltaSpikeFacet setDeltaSpikeVersion(String version);
+    DeltaSpikeFacet setDeltaSpikeVersion(String version);
     
-    public Set<DeltaSpikeModule> getInstalledModules();
+    Set<DeltaSpikeModule> getInstalledModules();
     
-    public DeltaSpikeFacet install(DeltaSpikeModule deltaSpikeModule);
+    DeltaSpikeFacet install(DeltaSpikeModule deltaSpikeModule);
     
-    public DeltaSpikeFacet remove(DeltaSpikeModule deltaSpikeModule);
+    DeltaSpikeFacet remove(DeltaSpikeModule deltaSpikeModule);
     
-    public boolean isModuleInstalled(DeltaSpikeModule deltaSpikeModule);
+    boolean isModuleInstalled(DeltaSpikeModule deltaSpikeModule);
 
 }
